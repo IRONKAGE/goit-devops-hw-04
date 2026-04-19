@@ -58,12 +58,12 @@
 Запустіть проєкт за допомогою команди:
 
 ```bash
-   docker-compose up -d 
+   docker-compose up -d
 ```
 
 Переконайтеся, що:
 
-   - Вебзастосунок доступний за адресою `http://localhost`
+   - Вебзастосунок доступний за адресою [http://localhost](http://localhost)
    - Підключення до бази даних `PostgreSQL` працює
 
 5. **Запуште проєкт у GitHub:**
@@ -87,3 +87,38 @@
 Конфігураційний файл `nginx.conf`:
 
    - `Django`-код із налаштуваннями бази даних `PostgreSQL`
+
+
+**Структура проекту:**
+
+```md
+goit-devops-hw-04/
+├── .env                  # (Секрети - не додаємо в Git, але вони все ж будуть тут у файлі ReadMe.md для відтворюваності і тесту...)
+├── .gitignore            # Правила ігнорування
+├── docker-compose.yml    # Головна оркестрація
+├── Dockerfile            # Інструкція для збірки Django
+├── entrypoint.sh         # Скрипт ініціалізації (God Mode)
+├── requirements.txt      # Залежності Python
+├── nginx/
+│   └── nginx.conf        # Конфіг проксі (з урахуванням статики)
+└── core/                  <-- Зовнішня папка (контейнер проекту)
+    ├── manage.py          <-- Головний скрипт управління
+    └── core/              <-- Внутрішня папка (головний Python-пакет проєкту)
+        ├── __init__.py
+        ├── asgi.py
+        ├── settings.py
+        ├── urls.py
+        └── wsgi.py
+```
+
+**Секрети фалу `.env`:**
+
+```env
+DEBUG=1
+SECRET_KEY=super-secret-key-for-dev
+POSTGRES_DB=django_db
+POSTGRES_USER=db_admin
+POSTGRES_PASSWORD=strong_password
+POSTGRES_HOST=db
+POSTGRES_PORT=5432
+```
