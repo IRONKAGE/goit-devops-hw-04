@@ -12,23 +12,26 @@ WORKDIR $APP_HOME
 # Створюємо непривілейованого користувача (Security Best Practice)
 RUN addgroup --system appuser && adduser --system --group appuser
 
-# Встановлюємо системні залежності (для PostgreSQL)
+# Встановлюємо системні залежності (netcat потрібен для очікування бази даних)
 RUN apt-get update && apt-get install -y netcat-traditional && rm -rf /var/lib/apt/lists/*
 
 # Копіюємо та встановлюємо залежності
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Копіюємо код проекту та скрипт запуску
-COPY ./core $APP_HOME/
-COPY ./entrypoint.sh $APP_HOME/
+# АРХІТЕКТУРНИЙ ФІКС: Копіюємо скрипт у КОРІНЬ (/), щоб volume його не затер
+COPY ./entrypoint.sh /entrypoint.sh
 
-# Надаємо права на скрипт запуску та змінюємо власника папки
-RUN chmod +x $APP_HOME/entrypoint.sh && \
-    chown -R appuser:appuser $APP_HOME
+# Надаємо права на скрипт запуску та змінюємо власника
+RUN chmod +x /entrypoint.sh && \
+    chown appuser:appuser /entrypoint.sh
+
+# Копіюємо код проєкту
+COPY ./core $APP_HOME/
+RUN chown -R appuser:appuser $APP_HOME
 
 # Перемикаємось на безпечного користувача
 USER appuser
 
-# Визначаємо скрипт, який виконається при старті
-ENTRYPOINT ["/app/entrypoint.sh"]
+# Визначаємо скрипт, який виконається при старті (запускаємо з кореня!)
+ENTRYPOINT ["/entrypoint.sh"]
