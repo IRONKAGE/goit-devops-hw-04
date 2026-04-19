@@ -1,19 +1,33 @@
+"""
+Django settings for core project.
+Generated for Docker/PostgreSQL/Nginx Environment.
+Architect: IRONKAGE
+"""
+
 import os
 from pathlib import Path
 
+# ==========================================
 # 1. Визначаємо базову директорію проекту
+# ==========================================
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# 2. Безпека: Секретний ключ (краще тримати в .env, але додамо fallback для розробки)
+# ==========================================
+# 2. Безпека: Секретний ключ та Debug
+# ==========================================
+# Краще тримати в .env, але додамо fallback для розробки
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-debug-key-12345')
 
-# 3. Режим відладки (Debug)
+# Режим відладки (Читаємо з .env, за замовчуванням увімкнено для тестів)
 DEBUG = int(os.environ.get('DEBUG', 1))
 
-# 4. Дозволені хости (Важливо для Nginx та Docker)
+# Дозволені хости (Критично важливо для Nginx та Gunicorn всередині Docker)
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'django', '0.0.0.0']
 
-# 5. Списки додатків (Стандартний набір Django)
+# ==========================================
+# 3. Додатки та Middleware
+# ==========================================
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -54,7 +68,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-# 6. Конфігурація Бази Даних (PostgreSQL для Docker)
+# ==========================================
+# 4. Конфігурація Бази Даних (PostgreSQL)
+# ==========================================
+# Дані автоматично підтягуються з вашого файлу .env
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -66,7 +83,9 @@ DATABASES = {
     }
 }
 
-# 7. Валідація паролів (Стандарт Django)
+# ==========================================
+# 5. Валідація паролів та Локалізація
+# ==========================================
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -74,15 +93,18 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# 8. Локалізація
+# Налаштування української мови та часового поясу
 LANGUAGE_CODE = 'uk-ua'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# 9. СТАТИЧНІ ФАЙЛИ (Налаштування для Nginx)
+# ==========================================
+# 6. СТАТИЧНІ ФАЙЛИ (Налаштування для Nginx)
+# ==========================================
 STATIC_URL = 'static/'
-# Папка, куди Django збере всі файли для Nginx під час collectstatic
+
+# Папка, куди Django збере всі файли для Nginx під час команди collectstatic
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
