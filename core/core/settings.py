@@ -23,7 +23,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-debug-key-12345')
 DEBUG = int(os.environ.get('DEBUG', 1))
 
 # Дозволені хости (Критично важливо для Nginx та Gunicorn всередині Docker)
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'django', '0.0.0.0']
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,django').split(',')
 
 # ==========================================
 # 3. Додатки та Middleware
